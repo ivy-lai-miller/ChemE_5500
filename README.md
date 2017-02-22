@@ -1,2 +1,2 @@
 # ChemE_5500
-this is a demo
+This repo is for ChemE 5500 "Software Carpentry"
