@@ -1,8 +1,8 @@
 from PIL import Image # need to write an image
 import random # random to make maze
 
-block_size =  10 # each block will be 10x10 pixels large
-dims = 256
+N_blocks =  50 # each block will be 50x50 pixels large
+dims = 500
 
 ''' Algorithm
 
@@ -35,11 +35,11 @@ stack = []
 
 joe_x = 0
 joe_y = 0
-joe_dir = NORTH # direction that joe came from
+# joe_dir = NORTH # direction that joe came from
 
 
 # List of stumbling stacks by joe
-stack.append((joe_x, joe_y, joe_dir))
+stack.append((joe_x, joe_y)
 
 # First position starts off as white
 maze[0][0] = 1
@@ -47,7 +47,7 @@ maze[0][0] = 1
 while len(stack) > 0: # while stack != []:
     # Find all legal moves
     moves = []
-    jx,jy,jd = stack[-1]
+    jx,jy = stack[-1]
 
     for d in DIRS:
         if d == jd:
