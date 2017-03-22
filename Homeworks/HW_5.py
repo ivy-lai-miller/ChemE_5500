@@ -10,16 +10,24 @@ class Game:
         # Check that this makes sense
         self.read()
 
+    NORTH = (0, 1)
+    SOUTH = (0, -1)
+    WEST = (-1, 0)
+    EAST = (1, 0)
+    DIRS = [NORTH, SOUTH, EAST, WEST]
+
     def read(self):
         fptr = open("SETUP.txt", "r").read()
-        lines = fptr.split("\n)
+        lines = fptr.split("\n")
         grid = []
         in_grid = False
         a_count, b_count, c_count
+        points = []
+        lasers = []
         for line in lines:
+            # assume that the text file has space after each x and o
             if in_grid:
-                temp = line.strip()
-                grid.append(temp)
+                grid.append(line)
 
             if line == "GRID START":
                 in_grid = True
@@ -28,15 +36,26 @@ class Game:
             if line == "GRID STOP":
                 in_grid = False
 
+            # store values for block types and number
             if line[0]=="A":
-                temp = line.strip()
-                a_count = temp[1]
+                a_count = int(line[2:])
             if line[0]=="B":
-                temp = line.strip()
-                b_count = temp[1]
+                b_count = int(line[2:])
             if line[0]=="C":
-                temp = line.strip()
-                c_count = temp[1]
+                c_count = int(line[2:])
+
+            if line[0]=="P":
+                temp = line.split(" ")
+                x = int(temp[1])
+                y = int(temp[2])
+                points.append(Point(x,y))
+
+            if line[0]=="L":
+                temp = line.split(" ")
+                x_coor = int(temp[1])
+                y_coor = int(temp[2])
+                dir = (int(temp[3]),int(temp[4]))
+                lasers.append(Laser(x_coor,y_coor,dir))
 
 
 
