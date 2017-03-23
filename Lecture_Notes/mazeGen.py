@@ -98,8 +98,8 @@ while stack != []:
         jy += move[1]
         stack.append((jx,jy))
         maze[jx][jy] = 1 # color the block
-
-        save_maze()
-        # time.sleep(.4)
+        #
+        # save_maze()
+        time.sleep(.4)
 
 save_maze()

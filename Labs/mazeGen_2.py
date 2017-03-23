@@ -43,7 +43,7 @@ def save_maze():
             index = maze[sx // dims][sy // dims]
             pixels[x, y] = colours[index]
 
-    image.save("NAME.png", "PNG")
+    image.save("Name.png", "PNG")
 
 
 def pos_chk(x, y):
@@ -116,7 +116,7 @@ while stack != []:
         stack.append((jx, jy))
         # Update maze
         maze[jx][jy] = 1
-
+        # 
         # save_maze()
         # time.sleep(1)
 

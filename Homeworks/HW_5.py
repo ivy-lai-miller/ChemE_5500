@@ -8,16 +8,7 @@ class Game:
     # through them all
     def __init__(self, fptr):
         # Check that this makes sense
-        self.read()
-
-    NORTH = (0, 1)
-    SOUTH = (0, -1)
-    WEST = (-1, 0)
-    EAST = (1, 0)
-    DIRS = [NORTH, SOUTH, EAST, WEST]
-
-    def read(self):
-        fptr = open("SETUP.txt", "r").read()
+        ptr = open("SETUP.txt", "r").read()
         lines = fptr.split("\n")
         grid = []
         in_grid = False
@@ -27,7 +18,7 @@ class Game:
         for line in lines:
             # assume that the text file has space after each x and o
             if in_grid:
-                grid.append(line)
+                grid.append(line.strip(" "))
 
             if line == "GRID START":
                 in_grid = True
@@ -54,13 +45,15 @@ class Game:
                 temp = line.split(" ")
                 x_coor = int(temp[1])
                 y_coor = int(temp[2])
-                dir = (int(temp[3]),int(temp[4]))
-                lasers.append(Laser(x_coor,y_coor,dir))
+                dir_x = int(temp[3])
+                dir_y = int(temp[4])
+                lasers.append(Laser(x_coor,y_coor,dir_x,dir_y))
 
-
-
-
-
+    NORTH = (0, 1)
+    SOUTH = (0, -1)
+    WEST = (-1, 0)
+    EAST = (1, 0)
+    DIRS = [NORTH, SOUTH, EAST, WEST]
 
 
 
@@ -79,10 +72,10 @@ class Block:
 
 class Laser:
     # store both the starting position and direction of the laser
-    def __init__(self,x=0,y=0,direction):
+    def __init__(self,x,y,dir_x, dir_y):
         self.x = x
         self.y = y
-        self.direction = direction
+        self.direction = (dir_x,dir_y)
 
 
 class Point:
