@@ -1,4 +1,7 @@
 import ast
+import itertools
+import random
+import copy
 
 class Game:
 
@@ -17,7 +20,7 @@ class Game:
         self.lasers = []
         self.a_count, self.b_count, self.c_count = 0,0,0
         self.game_specified = False
-        self.availble_spaces = 0
+        self.available_space = []
 
         for line in lines:
             # print line
@@ -30,9 +33,6 @@ class Game:
 
             if in_grid:
                 self.grid.append(line.split(" "))
-                for entry in line:
-                    if entry =="o":
-                        self.availble_spaces +=1
 
             if line == "GRID START":
                 in_grid = True
@@ -68,15 +68,28 @@ class Game:
                 dir_x = int(temp[3])
                 dir_y = int(temp[4])
                 self.lasers.append(Laser(x_coor,y_coor,dir_x,dir_y))
+
+        self.main_board = copy.deepcopy(self.grid)
+
+        for y in range(len(self.grid)):
+            for x in range(len(self.grid[y])):
+                if self.grid[y][x] == "o":
+                    self.available_space.append((y,x))
+                    self.main_board[y][x] = True
+                else:
+                    self.main_board[y][x] = False
+
+
         if len(self.blocks_avail)!= 0 and len(self.points)!=0 and len(self.lasers)!=0 and len(self.grid)!=0:
             self.game_specified=True
+
 
     def prnt(self):
         if self.game_specified:
             print "Grid: "
             for row in self.grid:
                 print ("\t %s" %row)
-            print ("\t Total Available Spaces: %d" %self.availble_spaces)
+            print ("\t Total Available Spaces: %d" %len(self.available_space))
             print "Available Blocks:"
             print ("\t A %d" %self.a_count)
             print ("\t B %d" %self.b_count)
@@ -86,7 +99,38 @@ class Game:
         else:
             print "GAME NOT FULLY SPECIFIED."
 
-    def generate_board(self):
+    def generate_boards(self):
+
+        def get_partitions(n,k):
+            for c in itertools.combinations(range(n+k-1), k-1):
+                yield [b-a-1 for a,b in zip((-1,)+c, c + (n+k-1,))]
+
+        partitions = [
+            p for p in get_partitions(len(self.blocks_avail),len(self.available_space)) if max(p)==1]
+        #
+        # print partitions[0]
+
+        boards = []
+        for board_sample in partitions:
+            counter = 0
+            temp_board = []
+
+            # Fix this
+            for value in range(len(self.grid)):
+                end = counter+len(self.grid)
+                temp_board.append(board_sample[counter:end])
+            # print temp_board
+            boards.append(temp_board)
+        # print boards
+        return boards
+
+    def set_board(self, board):
+        self.main_board = board
+
+    def save_board(self):
+        pass
+
+    def print_board(self):
         pass
 
 class Block:
@@ -120,3 +164,4 @@ class Point:
 
 a = Game("SETUP.txt")
 a.prnt()
+a.generate_boards()
