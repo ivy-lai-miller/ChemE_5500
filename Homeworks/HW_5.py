@@ -96,6 +96,7 @@ class Game:
             print ("\t C %d" %self.c_count)
             print ("Number of laser: %d" %len(self.lasers))
             print ("Number of points: %d" %len(self.points))
+            # print self.available_space
         else:
             print "GAME NOT FULLY SPECIFIED."
 
@@ -107,21 +108,34 @@ class Game:
 
         partitions = [
             p for p in get_partitions(len(self.blocks_avail),len(self.available_space)) if max(p)==1]
-        #
+
         # print partitions[0]
 
+        # for combination in partitions:
+        #     print combination
         boards = []
-        for board_sample in partitions:
-            counter = 0
-            temp_board = []
+        for combination in partitions:
 
-            # Fix this
-            for value in range(len(self.grid)):
-                end = counter+len(self.grid)
-                temp_board.append(board_sample[counter:end])
-            # print temp_board
-            boards.append(temp_board)
-        # print boards
+            permu = itertools.permutations(self.blocks_avail)
+
+            for case in permu:
+                temp_board = copy.deepcopy(self.grid)
+                counter_space = 0
+                counter_case = 0
+
+                for entry in combination:
+                    if entry == 1:
+                        y,x = self.available_space[counter_space]
+                        temp_board[y][x] = case[counter_case]
+                    counter_space +=1
+
+                counter_case +=1
+                # print temp_board
+                boards.append(temp_board)
+
+        for board in boards:
+            print board
+
         return boards
 
     def set_board(self, board):
@@ -145,6 +159,9 @@ class Block:
         self.absorbs = (value_up == "B" or value_up == "C")
         self.block_type = value_up
 
+    def __repr__(self):
+        return str(self.block_type)
+
 
 class Laser:
     # store both the starting position and direction of the laser
@@ -163,5 +180,5 @@ class Point:
         # may need to put whether it has been hit
 
 a = Game("SETUP.txt")
-a.prnt()
+# a.prnt()
 a.generate_boards()
