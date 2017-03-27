@@ -88,7 +88,8 @@ class Game:
         if self.game_specified:
             print "Grid: "
             for row in self.grid:
-                print ("\t %s" %row)
+                print "\t"+' '.join(row)
+                # print ("\t %s" %row)
             print ("\t Total Available Spaces: %d" %len(self.available_space))
             print "Available Blocks:"
             print ("\t A %d" %self.a_count)
@@ -99,6 +100,7 @@ class Game:
             # print self.available_space
         else:
             print "GAME NOT FULLY SPECIFIED."
+
 
     def generate_boards(self):
 
@@ -115,37 +117,54 @@ class Game:
         #     print combination
         boards = []
         for combination in partitions:
-
+            # permu is an array of all possible combinations (A,A,B) or (B,A,A)
             permu = itertools.permutations(self.blocks_avail)
 
             for case in permu:
                 temp_board = copy.deepcopy(self.grid)
                 counter_space = 0
-                counter_case = 0
+                counter_permu = 0
+                # print case
 
                 for entry in combination:
                     if entry == 1:
                         y,x = self.available_space[counter_space]
-                        temp_board[y][x] = case[counter_case]
+                        temp_board[y][x] = case[counter_permu]
+                        counter_permu +=1
                     counter_space +=1
 
-                counter_case +=1
                 # print temp_board
                 boards.append(temp_board)
-
-        for board in boards:
-            print board
-
+        # debugging
+        # for board in boards:
+        # print boards[0]
         return boards
 
-    def set_board(self, board):
+    # print_board(boards[1])
+
+
+    def set_board(self,board):
         self.main_board = board
 
-    def save_board(self):
-        pass
+    def save_board(self,board):
+        file_object = open("Board.txt", "w")
+        for row in board:
+            temp =map(str, row)
+            string = ""
+            for entry in temp:
+                string += entry
+            file_object.write(string + "\n")
+        file_object.close()
 
-    def print_board(self):
-        pass
+    def print_board(self,board):
+        for row in board:
+            temp = map(str,row)
+            print " ".join(temp)
+
+
+
+
+
 
 class Block:
     # Can be one of the following:
@@ -162,6 +181,8 @@ class Block:
     def __repr__(self):
         return str(self.block_type)
 
+    def __str__(self):
+        return str(self.block_type)
 
 class Laser:
     # store both the starting position and direction of the laser
@@ -180,5 +201,10 @@ class Point:
         # may need to put whether it has been hit
 
 a = Game("SETUP.txt")
-# a.prnt()
-a.generate_boards()
+a.prnt()
+boards = a.generate_boards()
+a.print_board(boards[1])
+# a.print_board(boards[0])
+# a.print_board(boards[2])
+# a.print_board(boards[3])
+a.save_board(boards[1])
