@@ -24,6 +24,6 @@ class Graph:
 
         plt.plot(xval,yval)
         fig = plt.gcf()
-        plt.show()
+        # plt.show()
 
         fig.savefig("%s.png" %fname)
