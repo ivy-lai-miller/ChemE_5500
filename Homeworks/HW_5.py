@@ -9,6 +9,7 @@ class Game:
     # Read user input & assign blocks, lasers, and points
     # Find alll possible different combinations of boards we can make and run
     # through them all
+    # Same setup file as in the assignment
     def __init__(self, fname):
         # Check that this makes sense
         fptr= open(fname, "r").read()
@@ -21,6 +22,9 @@ class Game:
         self.a_count, self.b_count, self.c_count = 0,0,0
         self.game_specified = False
         self.available_space = []
+
+        self.block_locations= []
+        self.points_location = []
 
         for line in lines:
             # print line
@@ -54,19 +58,22 @@ class Game:
                         self.c_count+=1
             # Check if you are specifying points and make points
             # Store the points in an array
+            # Store "in-between" points as 0.5 (ie blocks always on whole numbers)
+            # points and lasers may be on half steps
             if line[0]=="P":
                 temp = line.split(" ")
-                x = int(temp[1])
-                y = int(temp[2])
+                x = float(temp[1])/2
+                y = float(temp[2])/2
                 self.points.append(Point(x,y))
+                self.points_location.append((y,x))
 
             # Do the same with lasers
             if line[0]=="L":
                 temp = line.split(" ")
-                x_coor = int(temp[1])
-                y_coor = int(temp[2])
-                dir_x = int(temp[3])
-                dir_y = int(temp[4])
+                x_coor = float(temp[1])/2
+                y_coor = float(temp[2])/2
+                dir_x = float(temp[3])/2
+                dir_y = float(temp[4])/2
                 self.lasers.append(Laser(x_coor,y_coor,dir_x,dir_y))
 
         self.main_board = copy.deepcopy(self.grid)
@@ -145,6 +152,10 @@ class Game:
 
     def set_board(self,board):
         self.main_board = board
+        for y in board:
+            for x in y:
+                if board[y][x] in ["A","B","C"]:
+                self.block_locations.append((y,x))
 
     def save_board(self,board):
         file_object = open("Board.txt", "w")
@@ -157,11 +168,73 @@ class Game:
         file_object.close()
 
     def print_board(self,board):
+        print " "
         for row in board:
             temp = map(str,row)
             print " ".join(temp)
 
 
+
+    def run(self):
+        print ("Generating all the boards")
+        sys.stdout.flush()
+        boards = self.generate_boards()
+        print ("Done generating boards")
+        sys.stdout.flush()
+
+        print "Playing boards..."
+        sys.stdout.flush()
+
+        # loop through each board configuration (blocks in place)
+        # set the lasers and check if they hit any blocks
+        # check if lasers leave board
+        # if they hit a block, is the laser ending or reflecting or absorbing?
+        # if reflecting, then change the direction of the laser to rotate 90 degrees
+        # if absorbing, end the laser
+        # if see-through then reflect and also continue light passing
+        # store location of each laser hitted spot
+        # check if laser hits any points, if so then store the point hit
+        # check if every point is hit
+
+        for b_index, board in enumerate(boards):
+            self.set_board(board)
+
+            points_hit = []
+            current_lasers = copy.deepcopy(self.lasers)
+            positions_hit = []
+
+            # check if there is a lazer in the point
+            for j,laser in enumerate(current_lasers):
+                # x2, y2 will hold temp position of each lazer "step"
+                # for example, if the laser is at 1,3.5 and in direction (1,1) --> really (0.5,0.5)
+                # then (x2,y2) will be (1,3.5) then (1.5,4.5) then (2,5) until it is off the board
+                x2= laser.x
+                y2 = laser.y
+                while y2 < len(self.grid):
+                    while x2 < len(self.grid[0]):
+                        # check if you hit a point
+                        if (y2,x2) in self.points_location:
+                            index = self.points_location[(y2,x2)]
+                            self.points[index].hit = True
+                        # check if the location will intersect a block
+
+
+
+
+
+                        # if (int(x2), int(y2)) in self.block_locations:
+                        #     if laser.dir_x ==0 or laser.dir_y ==0:
+                        #         # then the laser ends
+                        #         continue
+                        #     if laser.dir_x == 1 and laser.dir_y in [-1,1]:
+                        #         laser.dir_y = laser.dir_y*-1
+                        #     if laser.dir_x == 1 and laser.dir_y == 1:
+
+
+
+                # position_of_lasers =
+                # child_laser = None
+                # child_laser.update(self.board, self.point)
 
 
 
@@ -175,7 +248,8 @@ class Block:
     def __init__(self,value):
         value_up = value.upper()
         self.reflects = (value_up == "A" or value_up == "C")
-        self.absorbs = (value_up == "B" or value_up == "C")
+        self.absorbs = (value_up == "B")
+        self.light_pass = (value_up=="C")
         self.block_type = value_up
 
     def __repr__(self):
@@ -193,11 +267,14 @@ class Laser:
         self.dir_y = dir_y
 
 
+
+
 class Point:
     # points where we want the laser light to intersect
     def __init__(self,x,y):
         self.x = x
         self.y = y
+        self.hit = False
         # may need to put whether it has been hit
 
 a = Game("SETUP.txt")
