@@ -104,6 +104,7 @@ class Game:
             print ("\t B %d" %self.b_count)
             print ("\t C %d" %self.c_count)
             print ("Number of laser: %d" %len(self.lasers))
+            print "Laser 1 pointing at: %s %s" %(self.lasers[0].dir_x, self.lasers[0].dir_y)
             print ("Number of points: %d" %len(self.points))
             # print self.available_space
         else:
@@ -157,7 +158,7 @@ class Game:
             for x in range(len(board[0])):
                 if board[y][x] not in  ["x","o"]:
                     self.block_locations.append((y,x))
-        print self.block_locations
+        print "Block locations at: %s" %(self.block_locations)
 
     def save_board(self,board):
         file_object = open("Board.txt", "w")
@@ -202,19 +203,22 @@ class Game:
         for b_index, board in enumerate(boards):
             self.set_board(board)
             times_entering_loop +=1
-            print board
+            # print board
             points_hit = []
 
             current_lasers = copy.deepcopy(self.lasers)
+            # precounter = 0
 
 
-            while len(current_lasers) > 0:
+            while current_lasers != []:
                 # x2, y2 will hold temp position of each lazer "step"
                 # for example, if the laser is at 1,3.5 and in direction (1,1) --> really (0.5,0.5)
                 # then (x2,y2) will be (1,3.5) then (1.5,4.5) then (2,5) until it is off the board
                 laser = current_lasers.pop()
+                print current_lasers
                 x2= laser.x
                 y2 = laser.y
+
 
                 while y2 < len(self.grid) and x2 < len(self.grid[0]):
                     points_hit.append((x2,y2))
@@ -222,12 +226,22 @@ class Game:
                     if (y2,x2) in self.points_location:
                         index = self.points_location.index((y2,x2))
                         self.points[index].hit = True
+                        # if not self.points[index].hit:
+                        #     self.points[index].hit = True
+                        #     precounter +=1
+                        #     print "precounter %d" %precounter
+                        #     if precounter ==len(self.points):
+                        #         break
+
+
+
                         # check if the location will intersect a block
                     # if we are in the middle of a block, do nothing
-                    if not(x2%1 == 0.5 and y2%1 == 0.5):
+                    if (x2%1 == 0.5 and y2%1 == 0.5):
                         pass
                     else:
                         l_dir = (laser.dir_x,laser.dir_y)
+
                         # not going to happen
                         # if l_dir == (0,-0.5):
                         #     xtemp = int(x2)
@@ -235,50 +249,7 @@ class Game:
                         #     if (xtemp,ytemp) in self.block_locations:
 
                         if l_dir == (0.5,-0.5):
-                            # 2 cases: can hit from bottom or left side
-                            # if x-cor is int, then hitting from side
-                            # if x-cor is not int, then hitting from bottom
-                            # UNCOMMENT STARTING HERE
-                            # if x2%1 == 0.5:
-                            #     xtemp = int(x2 - 0.5)
-                            #     ytemp = int(y2)
-                            #     if (ytemp,xtemp) in self.block_locations:
-                            #         tempblock = self.main_board[ytemp][xtemp]
-                            #         if tempblock.absorbs:
-                            #             break
-                            #         if tempblock.light_pass:
-                            #             x2 = x2+laser.dir_x
-                            #             y2 = y2+laser.dir_y
-                            #             continue
-                            #         if tempblock.reflects:
-                            #             current_lasers.append(Laser(x2,y2,0.5,0.5))
-                            #             if not tempblock.light_pass:
-                            #                 break
-                            # # if x-cor is int, then hitting from side
-                            # else:
-                            #     xtemp = int(x2)
-                            #     ytemp = int(y2 - 0.5)
-                            #     if (ytemp,xtemp) in self.block_locations:
-                            #         tempblock = self.main_board[ytemp][xtemp]
-                            #         if tempblock.absorbs:
-                            #             break
-                            #         if tempblock.light_pass:
-                            #             x2 = x2+laser.dir_x
-                            #             y2 = y2+laser.dir_y
-                            #             continue
-                            #         if tempblock.reflects:
-                            #             current_lasers.append(Laser(x2,y2,-0.5,-0.5))
-                            #             if not tempblock.light_pass:
-                            #                 break
-                            # UNCOMMENT ENDS HERE
-
-
-
-                            # 2 cases: can hit from bottom or left side
-                            # if x-cor is int, then hitting from side
-                            # if x-cor is not int, then hitting from bottom
-
-                            # Case 1: x-cor is not int (hit from bottom)
+                            print "ldir is %s %s" %l_dir
                             if x2%1 == 0.5:
                                 xtemp = int(x2 - 0.5)
                                 ytemp = int(y2)
@@ -302,11 +273,12 @@ class Game:
                                     else:
                                         l_xdir = -0.5
                                         l_ydir = -0.5
-                                    current_lasers.append(Laser(x2,y2,l_xdir,l_ydir))
+                                    current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     if not tempblock.light_pass:
                                         break
 
                         if l_dir == (0.5,0.5):
+                            print "ldir is %s %s" %l_dir
                             # Case 1: x-cor is not int (hit from top)
                             if x2%1 == 0.5:
                                 xtemp = int(x2 - 0.5)
@@ -333,13 +305,13 @@ class Game:
                                     else:
                                         l_xdir = -0.5
                                         l_ydir = 0.5
-                                    current_lasers.append(Laser(x2,y2,l_xdir,l_ydir))
+                                    print "Laser(%s,%s,%s,%s)" % (x2,y2,l_xdir,l_ydir)
+                                    current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     if not tempblock.light_pass:
-                                        print "before break"
                                         break
-                                        print "after break"
 
                         if l_dir == (-0.5,0.5):
+                            print "ldir is %s %s" %l_dir
                             # Case 1: x-cor is not int (hit from top)
                             if x2%1 == 0.5:
                                 xtemp = int(x2 - 0.5)
@@ -364,12 +336,13 @@ class Game:
                                     else:
                                         l_xdir = 0.5
                                         l_ydir = 0.5
-                                    current_lasers.append(Laser(x2,y2,l_xdir,l_ydir))
+                                    current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     if not tempblock.light_pass:
                                         break
 
 
                         if l_dir == (-0.5,-0.5):
+                            print "ldir is %s %s" %l_dir
                             # Case 1: x-cor is not int (hit from bottom)
                             if x2%1 == 0.5:
                                 xtemp = int(x2 - 0.5)
@@ -394,14 +367,15 @@ class Game:
                                     else:
                                         l_xdir = 0.5
                                         l_ydir = -0.5
-                                    current_lasers.append(Laser(x2,y2,l_xdir,l_ydir))
+
+                                    current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     if not tempblock.light_pass:
                                         break
                     # Update to next step block
                     x2 = x2+laser.dir_x
                     y2 = y2+laser.dir_y
             print board
-            print points_hit
+            print "Points hit %s" %points_hit
             hit_counter = 0
             for entry in self.points:
                 if entry.hit:
