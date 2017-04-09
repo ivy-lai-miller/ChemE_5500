@@ -1,5 +1,5 @@
 GRID START
-o o x o
+o o o o
 o o o o
 o o o o
 o o o o
