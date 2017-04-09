@@ -224,20 +224,18 @@ class Game:
 
                 x2= laser.x
                 y2 = laser.y
-                print x2,y2
+                # print x2,y2
 
                 while poschk(x2,y2):
-                    points_hit.append((x2,y2))
+                    # Do a check to see if we are in a infinite loop of lasers (MAD 2)
+                    if ((x2,y2), (laser.dir_x,laser.dir_y)) in points_hit:
+                        break
+                    points_hit.append(((x2,y2), (laser.dir_x,laser.dir_y)))
+
                     # check if you hit a point
                     if (y2,x2) in self.points_location:
                         index = self.points_location.index((y2,x2))
                         self.points[index].hit = True
-                        # if not self.points[index].hit:
-                        #     self.points[index].hit = True
-                        #     precounter +=1
-                        #     print "precounter %d" %precounter
-                        #     if precounter ==len(self.points):
-                        #         break
 
 
 
@@ -446,7 +444,7 @@ class Point:
         self.hit = False
         # may need to put whether it has been hit
 
-a = Game("SETUP.txt")
+a = Game("SETUP_debug.txt")
 a.prnt()
 a.run()
 # boards = a.generate_boards()
