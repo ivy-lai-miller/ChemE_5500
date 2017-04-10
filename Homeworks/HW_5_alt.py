@@ -476,13 +476,6 @@ class Point:
         self.hit = False
 
 
-a = Game("SETUP_debug.txt")
+a = Game("SETUP_DARK1.txt")
 # a.prnt()
 a.run()
-# boards = a.generate_boards()
-# a.print_board(boards[1])
-# print type(boards[1][3][1])
-# a.print_board(boards[0])
-# a.print_board(boards[2])
-# a.print_board(boards[3])
-# a.save_board(boards[1])
