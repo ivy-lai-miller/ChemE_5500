@@ -116,7 +116,7 @@ while stack != []:
         stack.append((jx, jy))
         # Update maze
         maze[jx][jy] = 1
-        # 
+        #
         # save_maze()
         # time.sleep(1)
 
