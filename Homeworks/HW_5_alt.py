@@ -1,6 +1,5 @@
 import ast
 import itertools
-# import random
 import copy
 import sys
 
@@ -12,7 +11,6 @@ class Game:
     # through them all
     # Same setup file as in the assignment
     def __init__(self, fname):
-        # Check that this makes sense
         fptr= open(fname, "r").read()
         lines = fptr.split("\n")
         self.grid = []
@@ -23,12 +21,9 @@ class Game:
         self.a_count, self.b_count, self.c_count = 0,0,0
         self.game_specified = False
         self.available_space = []
-
-        # self.block_locations= []
         self.points_location = []
 
         for line in lines:
-            # print line
             # assume that the text file has space after each x and o
             if len(line)==0:
                 continue
@@ -121,10 +116,6 @@ class Game:
         partitions = [
             p for p in get_partitions(len(self.blocks_avail),len(self.available_space)) if max(p)==1]
 
-        # print partitions[0]
-
-        # for combination in partitions:
-        #     print combination
         boards = []
         for combination in partitions:
             # permu is an array of all possible combinations (A,A,B) or (B,A,A)
@@ -145,12 +136,7 @@ class Game:
 
                 # print temp_board
                 boards.append(temp_board)
-        # debugging
-        # for board in boards:
-        # print boards[0]
         return boards
-
-    # print_board(boards[1])
 
 
     def set_board(self,board):
