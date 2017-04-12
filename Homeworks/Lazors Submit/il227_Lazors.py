@@ -496,7 +496,9 @@ class Point:
         # more than one time as long as it hit (so a counter won't work but a list or just a property will)
         self.hit = False
 
-
-a = Game("mad_1.input")
-# a.prnt()
-a.run()
+if len(sys.argv)<= 1:
+    print "Include file name in command line."
+else:
+    a = Game(sys.argv[1])
+    # a.prnt()
+    a.run()

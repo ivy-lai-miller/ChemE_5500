@@ -28,9 +28,11 @@
 
 ******CODE EXPLANATION/RUN-THROUGH****
 
-1. Create a game.
-	a = Game(“filename.txt”)
-	a.run()
+1. Start running the code in terminal. The code accepts the board name as an input argument (using argv). For example, if the sample board is in the same folder as the code, you can type the following in your command line:
+	python [file_name].py [sample_board]
+For example, I can type: 
+	python il227_Lazors.py mad_1.input
+  
 2. On your terminal, you should see the following:
     - If applicable, that you did not fully specified the game. (This assumes you must have at least one laser, point, and block)
     - When you are done generating all possible boards.
