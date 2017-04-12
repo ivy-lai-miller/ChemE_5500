@@ -22,6 +22,7 @@ class Game:
         self.game_specified = False
         self.available_space = []
         self.points_location = []
+        self.original_block_locations = []
 
         for line in lines:
             # assume that the text file has space after each x and o
@@ -40,7 +41,7 @@ class Game:
             # create blocks of the appropriate Type
             # and store them in an array
             # also count the number of blocks to print
-            if line[0] in ["A","B", "C"]:
+            if not in_grid and line[0] in ["A","B", "C"]:
                 line = line.split(" ")
                 # check how many blocks of one type
                 num_blocks = int(line[1])
@@ -76,11 +77,16 @@ class Game:
 
         for y in range(len(self.grid)):
             for x in range(len(self.grid[y])):
+                print self.grid[y][x]
                 if self.grid[y][x] == "o":
                     self.available_space.append((y,x))
-                    self.main_board[y][x] = True
-                else:
-                    self.main_board[y][x] = False
+                    # self.main_board[y][x] = True
+                if self.grid[y][x] in ["A", "B", "C"]:
+                    # self.main_board[y][x] = Block(self.grid[y][x])
+                    self.grid[y][x] = Block(self.grid[y][x])
+                    self.original_block_locations.append((y,x))
+                # else:
+                #     self.main_board[y][x] = False
 
 
         if len(self.blocks_avail)!= 0 and len(self.points)!=0 and len(self.lasers)!=0 and len(self.grid)!=0:
@@ -105,6 +111,19 @@ class Game:
             # print self.available_space
         else:
             print "GAME NOT FULLY SPECIFIED."
+            # print "Grid: "
+            # for row in self.grid:
+            #     print "\t"+' '.join(row)
+            #     # print ("\t %s" %row)
+            # print ("\t Total Available Spaces: %d" %len(self.available_space))
+            # print "Available Blocks:"
+            # print ("\t A %d" %self.a_count)
+            # print ("\t B %d" %self.b_count)
+            # print ("\t C %d" %self.c_count)
+            # print ("Number of laser: %d" %len(self.lasers))
+            # # For debugging
+            # # print "Laser 1 pointing at: %s %s" %(self.lasers[0].dir_x, self.lasers[0].dir_y)
+            # print ("Number of points: %d" %len(self.points))
 
 
     def generate_boards(self):
@@ -113,6 +132,8 @@ class Game:
             for c in itertools.combinations(range(n+k-1), k-1):
                 yield [b-a-1 for a,b in zip((-1,)+c, c + (n+k-1,))]
 
+        print len(self.blocks_avail)
+        print len(self.available_space)
         partitions = [
             p for p in get_partitions(len(self.blocks_avail),len(self.available_space)) if max(p)==1]
 
@@ -141,7 +162,7 @@ class Game:
 
     def set_board(self,board):
         self.main_board = board
-        self.block_locations=[]
+        self.block_locations = copy.deepcopy(self.original_block_locations)
         for y in range(len(board)):
             for x in range(len(board[0])):
                 if board[y][x] not in  ["x","o"]:
@@ -224,6 +245,7 @@ class Game:
                     if ((x2,y2), (laser.dir_x,laser.dir_y)) in path_hit:
                         break
 
+
                     # if not in a loop, we should step to the new spot and record
                     # that we have been here from our current direction
                     path_hit.append(((x2,y2), (laser.dir_x,laser.dir_y)))
@@ -276,10 +298,13 @@ class Game:
                                     if x2%1 == 0.5:
                                         l_xdir = 0.5
                                         l_ydir = 0.5
+                                        if not (int(y2),int(x2-0.5)) in self.block_locations:
+                                            current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     else:
                                         l_xdir = -0.5
                                         l_ydir = -0.5
-                                    current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
+                                        if not (int(y2-0.5),int(x2-1)) in self.block_locations:
+                                            current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     if not tempblock.light_pass:
                                         break
                                 if tempblock.light_pass:
@@ -310,11 +335,13 @@ class Game:
                                     if x2%1 == 0.5:
                                         l_xdir = 0.5
                                         l_ydir = -0.5
+                                        if not (int(y2-1),int(x2-0.5)) in self.block_locations:
+                                            current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     else:
                                         l_xdir = -0.5
                                         l_ydir = 0.5
-                                    # print "Laser(%s,%s,%s,%s)" % (x2,y2,l_xdir,l_ydir)
-                                    current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
+                                        if not (int(y2-0.5),int(x2-1)) in self.block_locations:
+                                            current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     if not tempblock.light_pass:
                                         break
                                 if tempblock.light_pass:
@@ -343,10 +370,13 @@ class Game:
                                     if x2%1 == 0.5:
                                         l_xdir = -0.5
                                         l_ydir = -0.5
+                                        if not (int(y2-1),int(x2-0.5)) in self.block_locations:
+                                            current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     else:
                                         l_xdir = 0.5
                                         l_ydir = 0.5
-                                    current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
+                                        if not (int(y2-0.5),int(x2)) in self.block_locations:
+                                            current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     if not tempblock.light_pass:
                                         break
                                 if tempblock.light_pass:
@@ -375,11 +405,14 @@ class Game:
                                     if x2%1 == 0.5:
                                         l_xdir = -0.5
                                         l_ydir = 0.5
+                                        if not (int(y2),int(x2-0.5)) in self.block_locations:
+                                            current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     else:
                                         l_xdir = 0.5
                                         l_ydir = -0.5
+                                        if not (int(y2-0.5),int(x2)) in self.block_locations:
+                                            current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
 
-                                    current_lasers.append(Laser(x2+l_xdir,y2+l_ydir,l_xdir,l_ydir))
                                     if not tempblock.light_pass:
                                         break
                                 if tempblock.light_pass:
@@ -391,8 +424,8 @@ class Game:
                     x2 = x2+laser.dir_x
                     y2 = y2+laser.dir_y
             # For debugging
-            # print board
-            # print "Path hit %s" %path_hit
+            print board
+            print "Path hit %s" %path_hit
 
             # Reset the hit counter (for debugging)
             hit_counter = 0
@@ -462,6 +495,6 @@ class Point:
         self.hit = False
 
 
-a = Game("SETUP_DARK1.txt")
+a = Game("SETUP_TINY5.txt")
 # a.prnt()
 a.run()
