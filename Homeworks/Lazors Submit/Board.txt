@@ -1,3 +1,4 @@
-ABA
-ooo
-ACo
+ooCo
+oooA
+Aooo
+oooo

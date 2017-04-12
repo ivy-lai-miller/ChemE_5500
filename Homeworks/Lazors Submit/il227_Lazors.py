@@ -33,7 +33,7 @@ class Game:
                 in_grid = False
 
             if in_grid:
-                self.grid.append(line.split(" "))
+                self.grid.append(line.split())
 
             if line == "GRID START":
                 in_grid = True
@@ -42,7 +42,7 @@ class Game:
             # and store them in an array
             # also count the number of blocks to print
             if not in_grid and line[0] in ["A","B", "C"]:
-                line = line.split(" ")
+                line = line.split()
                 # check how many blocks of one type
                 num_blocks = int(line[1])
                 for _ in range(num_blocks):
@@ -58,7 +58,7 @@ class Game:
             # Store "in-between" points as 0.5 (ie blocks always on whole numbers)
             # points and lasers may be on half steps
             if line[0]=="P":
-                temp = line.split(" ")
+                temp = line.split()
                 x = float(temp[1])/2
                 y = float(temp[2])/2
                 self.points.append(Point(x,y))
@@ -66,7 +66,7 @@ class Game:
 
             # Do the same with lasers
             if line[0]=="L":
-                temp = line.split(" ")
+                temp = line.split()
                 x_coor = float(temp[1])/2
                 y_coor = float(temp[2])/2
                 dir_x = float(temp[3])/2
@@ -77,7 +77,8 @@ class Game:
 
         for y in range(len(self.grid)):
             for x in range(len(self.grid[y])):
-                print self.grid[y][x]
+                # For debugging:
+                # print self.grid[y][x]
                 if self.grid[y][x] == "o":
                     self.available_space.append((y,x))
                     # self.main_board[y][x] = True
@@ -132,8 +133,9 @@ class Game:
             for c in itertools.combinations(range(n+k-1), k-1):
                 yield [b-a-1 for a,b in zip((-1,)+c, c + (n+k-1,))]
 
-        print len(self.blocks_avail)
-        print len(self.available_space)
+        # For debugging:
+        # print len(self.blocks_avail)
+        # print len(self.available_space)
         partitions = [
             p for p in get_partitions(len(self.blocks_avail),len(self.available_space)) if max(p)==1]
 
@@ -424,8 +426,8 @@ class Game:
                     x2 = x2+laser.dir_x
                     y2 = y2+laser.dir_y
             # For debugging
-            print board
-            print "Path hit %s" %path_hit
+            # print board
+            # print "Path hit %s" %path_hit
 
             # Reset the hit counter (for debugging)
             hit_counter = 0
@@ -495,6 +497,6 @@ class Point:
         self.hit = False
 
 
-a = Game("SETUP_TINY5.txt")
+a = Game("mad_1.input")
 # a.prnt()
 a.run()
